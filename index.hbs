@@ -9,29 +9,46 @@
                 <time datetime="{{date format="YYYY-MM-DD"}}">{{date format="YYYY-MM-DD"}}</time>
             </p>
 
-            {{content}}
-            <p><a href="{{url}}">阅读全文 »</a></p>
+            <section class="content">
+                {{content}}
+            </section>
+            <p class="more-link"><a href="{{url}}">阅读全文 »</a></p>
         </article>
     {{/foreach}}
     <script>
-        var contents = document.querySelectorAll('.kg-card-markdown');
-        for (var i = 0; i < contents.length; ++i) {
-            var nodes = contents[i].querySelectorAll('.kg-card-markdown > *');
-            if (nodes.length <= 5) {
-                contents[i].parentElement.querySelector('.post-more-link').style.display = 'none';
-                continue;
+        (function () {
+            var noWrapper = false;
+
+            var contents = document.querySelectorAll('.content > .kg-card-markdown');
+            if (contents.length === 0) {
+                contents = document.querySelectorAll('.content');
+                noWrapper = true;
             }
 
-            var more = Array.from(nodes).slice(5);
-            for (var j = 0; j < more.length; ++j) {
-                contents[i].removeChild(more[j]);
-            }
+            for (var i = 0; i < contents.length; ++i) {
+                var nodes;
+                if (noWrapper) {
+                    nodes = contents[i].querySelectorAll('.content > .kg-card-markdown > *');
+                } else {
+                    nodes = contents[i].querySelectorAll('.content > *');
+                }
 
-            var h = /^[Hh][1-6]$/;
-            if (h.test(nodes[4].tagName) && !h.test(nodes[3].tagName)) {
-                contents[i].removeChild(nodes[4]);
+                if (nodes.length <= 5) {
+                    contents[i].parentElement.querySelector('.more-link').style.display = 'none';
+                    continue;
+                }
+
+                var more = Array.from(nodes).slice(5);
+                for (var j = 0; j < more.length; ++j) {
+                    contents[i].removeChild(more[j]);
+                }
+
+                var h = /^[Hh][1-6]$/;
+                if (h.test(nodes[4].tagName) && !h.test(nodes[3].tagName)) {
+                    contents[i].removeChild(nodes[4]);
+                }
             }
-        }
+        })();
     </script>
 
     {{pagination}}
